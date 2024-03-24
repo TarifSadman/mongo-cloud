@@ -11,10 +11,12 @@ router.post('/insert', async (req, res) => {
     const { name, age, email } = req.body;
 
     const result = await collection.insertOne({ name, age, email });
-    res.json({ insertedId: result.insertedId });
+    const insertedId = result.insertedId;
+
+    res.status(201).json({ success: true, message: 'Data inserted successfully', insertedId });
   } catch (error) {
     console.error('Error inserting data:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ success: false, error: 'Internal server error' });
   }
 });
 
