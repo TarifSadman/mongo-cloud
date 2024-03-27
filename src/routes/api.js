@@ -1,37 +1,22 @@
 import express from 'express';
 import { client } from '../models/db.js';
 import { ObjectId } from 'mongodb';
-// import SendLime from '@sendlime/server-sdk';
 import { config } from 'dotenv';
+import authMiddleware from '../middleWare/authMiddleware.js';
 
 config();
 
 const router = express.Router();
 
-// const sendLime = new SendLime({
-//   apiKey: process.env.SENDLIME_API_KEY,
-//   apiSecret: process.env.SENDLIME_API_SECRET,
-// });
-
-router.post('/insert', async (req, res) => {
+router.post('/insert', authMiddleware, async (req, res) => {
   try {
     const db = client.db('mongoTryout');
-    const collection = db.collection('tarif-collects');
+    const collection = db.collection('random-collection');
 
     const { name, age, email, phone } = req.body;
 
     const result = await collection.insertOne({ name, age, email, phone });
     const insertedId = result.insertedId;
-
-    // await sendLime.message
-    // .sendSms({
-    //   from: 'SendLime',
-    //   text: `Hello ${name}, your data has been inserted successfully`,
-    //   to: phone,
-    // })
-    // .catch((error) => {
-    //   console.error('Error sending SMS:', error);
-    // })
 
     res.status(201).json({ success: true, message: 'Data inserted successfully', insertedId });
   } catch (error) {
@@ -40,7 +25,7 @@ router.post('/insert', async (req, res) => {
   }
 });
 
-router.get('/list', async (req, res) => {
+router.get('/list', authMiddleware, async (req, res) => {
   try {
     const db = client.db('mongoTryout');
     const collection = db.collection('tarif-collects');
@@ -54,7 +39,7 @@ router.get('/list', async (req, res) => {
   }
 });
 
-router.put('/update/:id', async (req, res) => {
+router.put('/update/:id', authMiddleware,  async (req, res) => {
   try {
     const { id } = req.params;
     const { name, age, email, phone } = req.body;
@@ -78,7 +63,7 @@ router.put('/update/:id', async (req, res) => {
   }
 });
 
-router.delete('/delete/:id', async (req, res) => {
+router.delete('/delete/:id', authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
 
